@@ -37,4 +37,4 @@ class ProductServices {
     return productUpDate;
   }
 }
-module.exports = ProductServices 
+module.exports = ProductServices  

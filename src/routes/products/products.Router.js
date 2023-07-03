@@ -25,8 +25,6 @@ router.get('/', async (req, res) => {
      hasNextPage:dataproduct.hasNextPage,
      prevLink:dataproduct.hasPrevPage?`http://localhost:8080/dataproduct/?page=${dataproduct.prevPage} ` : null,
      nextLink:dataproduct.hasNextPage?`http://localhost:8080/dataproduct/?page=${dataproduct.nextPage} `: null,
-
-
     });
   } catch (e) {
     console.log(e);
@@ -39,87 +37,85 @@ router.get('/', async (req, res) => {
 });
 router.get('/:id', async (req, res) => {
 
-try {
-  const { id } = req.params;
- const product= await   Service.getById(id)
-return product? 
- res.status(200).json({
-    status: 'success', 
-    msg: 'Product Get by ID',
-    data: product,
-  }):
-   res.status(200).json({
-    status: 'error',
-    msg: 'Product not found',                                                             
-    data: product,
-  })
-} catch (e) {
-  console.log(e);
-  return res.status(500).json({
-    status: 'error',
-    msg: 'something went wrong :(',
-    data: {},
-  });
-}
+    try {
+      const { id } = req.params;
+      const product= await   Service.getById(id)
+      return product? 
+      res.status(200).json({
+          status: 'success', 
+          msg: 'Product Get by ID',
+          data: product,
+        }):
+      res.status(200).json({
+          status: 'error',
+          msg: 'Product not found',                                                             
+          data: product,
+        })
+    } 
+    catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        status: 'error',
+        msg: 'something went wrong :(',
+        data: {},
+      });
+    }
 })
 router.post('/', async (req, res) => {
-  try {
-
-    // const { title, description, thumbnail, code, stock, category, status } = req.body;
-    const data= req.body
-    const productCreated = await Service.createOne(data);
-    return res.status(201).json({
-      status: 'success',
-      msg: 'product created',
-      data: productCreated,
-    });
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json({
-      status: 'error',
-      msg: 'something went wrong :(',
-      data: {},
-    });
-  }
+    try {
+      const data= req.body
+      const productCreated = await Service.createOne(data);
+      return res.status(201).json({
+        status: 'success',
+        msg: 'product created',
+        data: productCreated,
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        status: 'error',
+        msg: 'something went wrong :(',
+        data: {},
+      });
+    }
 });
-
 router.delete('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Service.deletedOne(id)
-    return res.status(200).json({
-      status: 'success',
-      msg: 'Product deleted',
-      data: {},
-    });
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json({
-      status: 'error',
-      msg: 'something went wrong :(',
-      data: {},
-    });
-  }
+    try {
+      const { id } = req.params;
+      await Service.deletedOne(id)
+      return res.status(200).json({
+        status: 'success',
+        msg: 'Product deleted',
+        data: {},
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        status: 'error',
+        msg: 'something went wrong :(',
+        data: {},
+      });
+    }
 });
 router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, description, thumbnail, code, stock, category, status } = req.body;
-   const data= req.body
-    await Service.updateOne(id,title, description, thumbnail, code, stock, category, status)
-    return res.status(201).json({
-      status: 'success',
-      msg: 'Product update',
-      data:data,
-    });
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json({
-      status: 'error',
-      msg: 'something went wrong :(',
-      data: {},
-    });
-  }
+    try {
+      const { id } = req.params;
+      const { title, description, thumbnail, code, stock, category, status } = req.body;
+    const data= req.body
+      await Service.updateOne(id,title, description, thumbnail, code, stock, category, status)
+      return res.status(201).json({
+        status: 'success',
+        msg: 'Product update',
+        data:data,
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        status: 'error',
+        msg: 'something went wrong :(',
+        data: {},
+      });
+    }
 });
 
-module.exports =router
+module.exports = router

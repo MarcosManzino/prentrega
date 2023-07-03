@@ -11,6 +11,23 @@ const Chat= require('./dao/models/chat.model')
 app.use(express.static(__dirname + '/public'))
 app.use(express.urlencoded({extended:true}))
 
+// Sessions requires
+const session = require('express-session')
+const cookieParser = require('cookie-parser')
+const MongoStore = require('connect-mongo')
+app.use(cookieParser())
+app.use(session({
+    store: MongoStore.create({
+        mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
+        // ttl:'',
+        mongoUrl:'mongodb+srv://correadamian2019:yYKWey5097OGnJVA@cluster0.ecgm0fn.mongodb.net/ecommerce'
+    }),
+    secret:'Sp1d3rm4n',
+    resave:false,
+    saveUninitialized:false
+
+}))
+
 // Routes
 const productRouter = require('./routes/products/products.Router')
 app.use('/api/product', productRouter)
@@ -22,6 +39,13 @@ const routesCart = require('./routes/cart/cart.route')
 app.use('/api/cart', routesCart)
 const cartViews = require('./routes/cart/cart.view')
 app.use('/cart', cartViews)
+// Users
+const usersRouter = require('./routes/user/users.route')
+app.use('/api/user',usersRouter)
+// Sessions
+const sessions = require('./routes/sessions/sessions.route')
+app.use('/session', sessions)
+
 
 const routesRealTime = require('./routes/realTimeProduct/realTimeProduct.route')
 app.use('/realTimeProducts', routesRealTime)
@@ -146,3 +170,4 @@ server.listen(PORT, ()=>{
     const database= new DataBase(url)
     database.connect()
 })
+
