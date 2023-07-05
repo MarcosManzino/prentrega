@@ -29,7 +29,13 @@ router.post('/login', async (req,res)=>{
             console.log('Usuario Encontrado', userFound)
             req.session.userEmail= email
             req.session.userPassword= password
-            res.redirect('/session/profile')
+            // Verificar si el rol del usuario es 'admin'
+            if (userFound.role === 'admin') {
+                // Redirigir al usuario a una página específica para administradores
+                res.redirect('/admin')
+            } else {
+                res.redirect('/session/profile')
+            }
         }
         else{
             console.log('Usuario no encontrado')
@@ -42,9 +48,9 @@ router.post('/login', async (req,res)=>{
             msg: 'something went wrong :(',
             data: {},
         });
-        }
-    
+    }
 })
+
 router.get('/profile', (req,res)=>{
    res.render('profile',{
     style:'profile.css',

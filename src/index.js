@@ -20,7 +20,7 @@ app.use(session({
     store: MongoStore.create({
         mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
         // ttl:'',
-        mongoUrl:'mongodb+srv://correadamian2019:yYKWey5097OGnJVA@cluster0.ecgm0fn.mongodb.net/ecommerce'
+        mongoUrl:'mongodb+srv://asadi01:<password>@cluster0.9vaoj7r.mongodb.net'
     }),
     secret:'Sp1d3rm4n',
     resave:false,
