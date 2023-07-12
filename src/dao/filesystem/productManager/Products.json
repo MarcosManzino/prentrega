@@ -5,7 +5,7 @@
     "price": 100,
     "thumbnail": "thumbnail",
     "code": "aaa1",
-    "stock": 20,
+    "stock": 20, 
     "category": "",
     "status": true,
     "id": 31

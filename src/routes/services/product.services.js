@@ -4,15 +4,15 @@ class ProductServices {
 
   async getAll( page, limit, sort, data ) {
     if(sort){
-      const product = await Product.paginate({}, { limit:limit || 3, page: page || 1, sort:{price:sort || 'asc'}});
+      const product = await Product.paginate({}, { limit:limit || 8, page: page || 1, sort:{price:sort || 'asc'}});
     return product; 
     }
     else if (data){
-      const product = await Product.paginate(data, { limit:limit || 3, page: page || 1,});
+      const product = await Product.paginate(data, { limit:limit || 8, page: page || 1,});
     return product;
     }
     else{
-      const product = await Product.paginate({}, { limit:limit || 3, page: page || 1,});
+      const product = await Product.paginate({}, { limit:limit || 8, page: page || 1,});
       return product;
     }
 
@@ -25,6 +25,10 @@ class ProductServices {
     
     const productCreated = await Product.create(data);
     return productCreated;
+  }
+  async createMany(data){
+    const productsCreated = await Product.insertMany(data)
+    return productsCreated
   }
 
   async deletedOne(_id) {

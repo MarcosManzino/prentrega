@@ -1,3 +1,10 @@
 .singup{
     text-decoration: none;
 }
+.ocultar {
+    display: none;
+}
+
+.mostrar {
+    display: block;
+}

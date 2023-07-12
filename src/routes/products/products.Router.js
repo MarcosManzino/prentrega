@@ -79,6 +79,24 @@ router.post('/', async (req, res) => {
       });
     }
 });
+router.post('/many', async (req,res)=>{
+  try {
+    const data= req.body
+    const productCreated = await Service.createMany(data)
+    return res.status(201).json({
+      status: 'success',
+      msg: 'product created',
+      data: productCreated,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: 'error',
+      msg: 'something went wrong :(',
+      data: {},
+    });
+  }
+})
 router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;

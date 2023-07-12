@@ -1,8 +1,11 @@
 <br><br>
 
 <div class="container">
-
-<h3>Perfil de usuario</h3>
+{{#if data}}
+<h3>Bienvenido {{data.name}} {{data.last_name}} </h3>
+{{else}}
+<h3>Datos no enviados</h3>
+{{/if}} 
 <br><br>
 <a href="/session/logout">Logout</a>
 

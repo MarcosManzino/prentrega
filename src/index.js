@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 8080 || process.env.PORT 
 
+
 //Mongo
 const DataBase= require('./dao/mongoDao/db')
 const Product= require('./dao/models/products.model')
@@ -20,13 +21,21 @@ app.use(session({
     store: MongoStore.create({
         mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
         // ttl:'',
-        mongoUrl:'mongodb+srv://asadi01:<password>@cluster0.9vaoj7r.mongodb.net'
+        mongoUrl:'mongodb+srv://asadi01:<password>@cluster0.9vaoj7r.mongodb.net/ecommerce'
     }),
     secret:'Sp1d3rm4n',
     resave:false,
     saveUninitialized:false
 
 }))
+// Passport Passport-Local
+const initializePassport = require('./config/passport')
+const passport = require('passport')
+initializePassport() //Importante que este antes de el paasport.initialize
+app.use(passport.initialize())
+app.use(passport.session())
+
+
 
 // Routes
 const productRouter = require('./routes/products/products.Router')

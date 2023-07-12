@@ -5,10 +5,10 @@
         {{#each products}}
                 {{!-- <div class="card" style="width: 15rem;"> --}}
                 <div class="card" >
-                <img src="https://via.placeholder.com/180x180" class="card-img-top" alt="...">
+                <img src="{{this.thumbnail}}" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">{{this.title}}</h5>
-                    <p class="card-text">Description: {{this.description}}</p>
+                    {{!-- <p class="card-text">Description: {{this.description}}</p> --}}
                     <p class="card-text">Price: $<strong>{{this.price}}</strong> || Stock: {{this.stock}}</p>
                     
                 </div>
