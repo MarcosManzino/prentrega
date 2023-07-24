@@ -136,4 +136,11 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.get('*', ()=> {
+  res.renderres.render('error404',{
+      style:'error404.css',
+      title:'Error 404'
+     })
+})
+
 module.exports = router

@@ -292,4 +292,11 @@ router.put('/:cId/product/:pId', (req,res)=>{
     }) 
 })
 
+router.get('*', (req,res)=> {
+    res.render('error404',{
+        style:'error404.css',
+        title:'Error 404'
+       })
+  })
+
 module.exports = router

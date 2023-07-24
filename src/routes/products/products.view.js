@@ -38,9 +38,11 @@ productViews.get('/', async (req,res)=>{
         title:'Products'}) 
 })
 
-
-
-
-
+productViews.get('*', (req,res)=> {
+    res.render('error404',{
+        style:'error404.css',
+        title:'Error 404'
+       })
+})
 
 module.exports= productViews
