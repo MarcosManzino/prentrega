@@ -3,6 +3,7 @@ const User = require('../../dao/models/users.model')
 const UserServices = require('../services/users.services')
 const {createHash} = require ('../../utils/bcrypt')
 const passport = require('passport')
+const { isUser, isAdmin } = require("../../middlewares/middleware.auth");
 
 const Service = new UserServices()
 

@@ -4,7 +4,7 @@ const cartPaginate = require('mongoose-paginate-v2')
 const CartSchema = new mongoose.Schema({ 
   date:{
     type:String,
-    unique:true,
+    unique:false,
     required:true
   },
   products:{

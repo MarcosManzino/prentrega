@@ -1,134 +1,160 @@
-const Product= require('../../dao/models/products.model')
-const express = require('express')
+const express = require("express");
+const Product = require("../../dao/models/products.model");
+const ProductServices = require("../services/product.services.js");
+const { isUser, isAdmin } = require("../../middlewares/middleware.auth");
 
-const { Router } = express
+const Service = new ProductServices();
 
-const router = new Router()
- 
-router.use(express.json())
-router.use(express.urlencoded({extended:true}))
+const { Router } = express;
+const router = new Router();
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
 
-router.get('/:pId', (req,res)=>{
-    const pId = req.params.pId
-    Product.find({}).lean()
-    .then(pr=>{
-        let prodFiltrado= pr.find((p)=> p._id == pId)
-        console.log(prodFiltrado)
-        console.log(typeof(prodFiltrado))
-        if(!prodFiltrado){
-            res.send(`<div style="margin-top:50px;margin-left:50px;border:solid red;width:80%;justify-content:center, display:flex;flex-direction:row;text-align: center;">
-            <h1 style="color:red;padding:30px;">Producto no encontrado</h1>
-            </div>`)
-        }else{
-            res.render('home', {
-                products:[prodFiltrado],   
-                style:'products.css',
-                title:'Products'
-            }) 
-        }
-    })
-    .catch(err=>{
-        res.status(500).send(
-            console.log('Error loading product')
-        )
-    }) 
-})
-
-router.get('/', (req,res)=>{
-    // let product = new ProductManager("./src/routes/products/Products.json");
-    // let products = product.getProducts()
-   
-    let {limit} = req.query;
-    let intLimit= parseInt(limit)
-    if(!intLimit){
-        Product.find({}).lean()
-        .then(pr=>{
-            res.render('home', {
-                products:pr,
-                style:'products.css',
-                title:'Products'
-            }) 
+router.get("/", async (req, res) => {
+  const { page, limit } = req.query;
+  try {
+    const dataproduct = await Service.getAll(page, limit);
+    
+    return res.status(200).json({
+      status: "success",
+      payload: dataproduct.docs,
+      totalPages: dataproduct.totalPages,
+      prevPages: dataproduct.prevPage,
+      nextPages: dataproduct.nextPage,
+      page: dataproduct.page,
+      hasPrevPage: dataproduct.hasPrevPage,
+      hasNextPage: dataproduct.hasNextPage,
+      prevLink: dataproduct.hasPrevPage
+        ? `http://localhost:8080/dataproduct/?page=${dataproduct.prevPage} `
+        : null,
+      nextLink: dataproduct.hasNextPage
+        ? `http://localhost:8080/dataproduct/?page=${dataproduct.nextPage} `
+        : null,
+      
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: "error",
+      msg: "something went wrong :(",
+      data: {},
+    });
+  }
+});
+router.get("/:id", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Service.getById(id);
+    return product
+      ? res.status(200).json({
+          status: "success",
+          msg: "Product Get by ID",
+          data: product,
         })
-        .catch(err=>{
-            res.status(500).send(
-                console.log('Error loading product')
-            )
-        })  
-    }
-    else{
-        Product.find({}).lean()
-        .then(pr=>{
-            prod=[]
-            for(let i=0; i < intLimit; i++){
-            prod.push(pr[i])
-            }
-            res.render('home',{
-                products:prod,
-                style:'products.css',
-                title:'Products'
-            })
-    })
-    .catch(err=>{
-        res.status(500).send(
-            console.log('Error loading product')
-        )
-    }) 
-    }
-})
+      : res.status(200).json({
+          status: "error",
+          msg: "Product not found",
+          data: product,
+        });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: "error",
+      msg: "something went wrong :(",
+      data: {},
+    });
+  }
+});
+router.post("/", isAdmin, async (req, res) => {
+  try {
+    const data = req.body;
+    const productCreated = await Service.createOne(data);
+    return res.status(201).json({
+      status: "success",
+      msg: "product created",
+      data: productCreated,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: "error",
+      msg: "something went wrong :(",
+      data: {},
+    });
+  }
+});
+router.post("/many", isAdmin, async (req, res) => {
+  try {
+    const data = req.body;
+    const productCreated = await Service.createMany(data);
+    return res.status(201).json({
+      status: "success",
+      msg: "product created",
+      data: productCreated,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: "error",
+      msg: "something went wrong :(",
+      data: {},
+    });
+  }
+});
+router.delete("/:id", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Service.deletedOne(id);
+    return res.status(200).json({
+      status: "success",
+      msg: "Product deleted",
+      data: {},
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: "error",
+      msg: "something went wrong :(",
+      data: {},
+    });
+  }
+});
+router.put("/:id", isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, thumbnail, code, stock, category, status } =
+      req.body;
+    const data = req.body;
+    await Service.updateOne(
+      id,
+      title,
+      description,
+      thumbnail,
+      code,
+      stock,
+      category,
+      status
+    );
+    return res.status(201).json({
+      status: "success",
+      msg: "Product update",
+      data: data,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      status: "error",
+      msg: "something went wrong :(",
+      data: {},
+    });
+  }
+});
 
-router.post('/', (req, res)=>{
-    let data = req.body
-    let product= new Product(data)
-    product.save()
-    .then(pr=>{
-        res.status(201).send({
-            msg:'product added successfully',
-            data:data
-        })
-    })
-    .catch(err=>{
-        res.status(500).send(
-            console.log('Error loading product')
-        )
-    })
+router.get("*", () => {
+  res.render("error404", {
+    style: "error404.css",
+    title: "Error 404",
+  });
+});
 
-})
- 
-router.put('/:pId', (req,res)=>{ 
-   
-    const pId = req.params.pId
-    const data = req.body
-    console.log(data)
-    Product.updateOne({_id:pId},data)
-    .then(pr =>{
-        res.status(201).send({
-            msg:'Product Update successfully',
-            data:data
-        })
-    })
-    .catch(err=>{
-        res.status(500).send(
-            console.log('Error Update product')
-        )
-    })
-})
-
-router.delete('/:pId', (req,res)=>{
-    let pId = req.params.pId
-    Product.deleteOne({_id:pId})
-    .then(pr =>{
-        res.status(201).send({
-            msg:'Product Delete successfully',
-            data:pr
-        })
-    })
-    .catch(err=>{
-        res.status(500).send(
-            console.log('Error Delete product')
-        )
-    })
-})
-
-module.exports = router
-
-
+module.exports = router;

@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
-const PORT = 8080 || process.env.PORT 
+const {port, mongoUrl, secret} = require('./config/config')
+// require('dotenv').config({path:'src/.env'})
+// const PORT = process.env.PORT || 3000
 
 
 //Mongo
@@ -16,14 +18,14 @@ app.use(express.urlencoded({extended:true}))
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const MongoStore = require('connect-mongo')
-app.use(cookieParser())
+app.use(cookieParser()) 
 app.use(session({
     store: MongoStore.create({
         mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
         // ttl:'',
-        mongoUrl:'mongodb+srv://asadi01:<password>@cluster0.9vaoj7r.mongodb.net/ecommerce'
+        mongoUrl:mongoUrl
     }),
-    secret:'Sp1d3rm4n',
+    secret:secret,
     resave:false,
     saveUninitialized:false
 
@@ -31,40 +33,38 @@ app.use(session({
 // Passport Passport-Local
 const initializePassport = require('./config/passport')
 const passport = require('passport')
-// Passport social
-// const gitHubPassport = require('./config/github.passport')
 initializePassport() //Importante que este antes de el paasport.initialize
-// gitHubPassport() 
 app.use(passport.initialize())
 app.use(passport.session())
 
-
+ 
 
 // Routes
-const productRouter = require('./routes/products/products.Router')
-app.use('/api/product', productRouter)
-const productviews= require('./routes/products/products.view')
-app.use('/products',productviews)
-// const routesProducts = require('./routes/products/products.route')
-// app.use('/products', routesProducts)
+//Products
+const routesProduct = require('./routes/products/products.route')
+app.use('/api/product', routesProduct)
+const viewsProducts= require('./routes/products/products.view')
+app.use('/products',viewsProducts)
+//Cart
 const routesCart = require('./routes/cart/cart.route') 
 app.use('/api/cart', routesCart)
-const cartViews = require('./routes/cart/cart.view')
-app.use('/cart', cartViews)
+const viewsCart = require('./routes/cart/cart.view')
+app.use('/cart', viewsCart)
 // Users
-const usersRouter = require('./routes/user/users.route')
-app.use('/api/user',usersRouter)
+const routesUsers = require('./routes/user/users.route')
+app.use('/api/user',routesUsers)
 // Sessions
 const sessions = require('./routes/sessions/sessions.route')
 app.use('/session', sessions)
+const apiSession = require('./routes/sessions/session.api')
+app.use('/api/session/', apiSession)
 // auth.pasport
 const authPassport = require('./routes/passport/auth.passport')
 app.use('/auth', authPassport)
-
-
+//Real time Products
 const routesRealTime = require('./routes/realTimeProduct/realTimeProduct.route')
 app.use('/realTimeProducts', routesRealTime)
-
+// Chat
 const routesChat = require('./routes/chat/chat.route')
 app.use('/chat', routesChat)
 
@@ -78,7 +78,6 @@ app.set('views', __dirname + '/views/')
 // Sockets set
 const {Server} = require('socket.io')
 const http = require('http')
-const CartView = require('./routes/cart/cart.view')
 const server = http.createServer(app)
 const io = new Server(server)
 
@@ -111,11 +110,6 @@ io.on('connection', (socket)=>{
 
     })
     socket.on('delProduct',(data)=>{
-        // let {id} =data
-        // let pId = parseInt(id)
-        // let product = new ProductManager("./src/routes/products/Products.json");
-        // product.deleteProduct(pId)
-        // let newData = product.getProducts()
         let {id} =data
         console.log(id)
         Product.deleteOne({_id:id})
@@ -171,18 +165,31 @@ io.on('connection', (socket)=>{
 })
 
 app.get('/', (req,res)=> {  
-    const data={
-        title:'ecommerce backend',
-        message:'Ecommerce backend  Index',
-        style:'style.css',
+    if(req.session.user){
+        let session = req.session.user
+        let rol = req.session.user.rol 
+        console.log(req.session.user) 
+        const data={
+            title:'ecommerce backend',
+            message:'Ecommerce backend  Index',
+            style:'style.css',
+        }
+        data[rol]= session
+        res.render('index', data) 
     }
-    res.render('index', data) 
+    else{
+        const data={
+            title:'ecommerce backend',
+            message:'Ecommerce backend  Index',
+            style:'style.css',
+        }
+        res.render('index', data) 
+    }
 })
 
-server.listen(PORT, ()=>{
-    console.log('Server is runing on port 8080')
-    url= 'mongodb+srv://asadi01:<password>@cluster0.9vaoj7r.mongodb.net/'
-    const database= new DataBase(url)
+server.listen(port, ()=>{
+    console.log('Server is runing on port: ' + port)
+    const database= new DataBase(mongoUrl)
     database.connect()
 })
 

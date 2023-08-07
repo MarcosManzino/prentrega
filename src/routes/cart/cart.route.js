@@ -2,6 +2,7 @@ const express = require('express')
 const Product= require('../../dao/models/products.model')
 const Cart= require('../../dao/models/cart.model')
 const CartService= require('../services/cart.services')
+const { isUser, isAdmin } = require("../../middlewares/middleware.auth");
 
 const cartService = new CartService()
 const { Router } = express
@@ -11,7 +12,7 @@ const router = new Router()
 router.use(express.json())
 router.use(express.urlencoded({extended:true}))
 
-router.get('/', (req,res)=> {
+router.get('/', isAdmin, (req,res)=> {
     Cart.find({}).lean()
     .then(pr=>{
         res.status(200).send(
@@ -29,9 +30,9 @@ router.get('/', (req,res)=> {
     })  
      
 })
-router.post('/', (req,res)=> {
+router.post('/', isAdmin, (req,res)=> {
     let data = req.body
-    let cart= new Cart(data)
+    let cart= new Cart(data) 
     cart.save()
     .then(pr=>{
         res.status(201).send({
@@ -45,7 +46,7 @@ router.post('/', (req,res)=> {
         )
     })
 })
-router.get('/:cId', (req,res)=> {
+router.get('/:cId', isAdmin, (req,res)=> {
     const cId = req.params.cId
     Cart.findOne({_id:cId})
     .then(pr=>{
@@ -63,7 +64,7 @@ router.get('/:cId', (req,res)=> {
         )
     })  
 })
-router.post('/:cId/product/:pId', (req,res)=>{
+router.post('/:cId/product/:pId', isAdmin, (req,res)=>{
     const cId = req.params.cId
     const pId = req.params.pId
     Cart.findOne({_id:cId})
@@ -124,7 +125,7 @@ router.post('/:cId/product/:pId', (req,res)=>{
         })
     }) 
 })
-router.delete('/:cId', async (req,res)=>{
+router.delete('/:cId', isAdmin, async (req,res)=>{
     let id = req.params.cId
     Cart.findOne({_id:id})
     .then(pr=>{
@@ -154,7 +155,7 @@ router.delete('/:cId', async (req,res)=>{
         })
     }) 
 })
-router.delete('/:cId/product/:pId', (req,res)=>{
+router.delete('/:cId/product/:pId', isAdmin, (req,res)=>{
     const cId = req.params.cId
     const pId = req.params.pId
     Cart.findOne({_id:cId})
@@ -207,7 +208,7 @@ router.delete('/:cId/product/:pId', (req,res)=>{
         })
     }) 
 })
-router.put('/:cId', (req,res)=>{
+router.put('/:cId', isAdmin, (req,res)=>{
     let cId = req.params.cId
     let data = req.body
     Cart.findOne({_id:cId})
@@ -240,7 +241,7 @@ router.put('/:cId', (req,res)=>{
         })
     }) 
 })
-router.put('/:cId/product/:pId', (req,res)=>{
+router.put('/:cId/product/:pId', isAdmin, (req,res)=>{
     let cId = req.params.cId
     let pId = req.params.pId
     let {data} = req.body
@@ -297,6 +298,6 @@ router.get('*', (req,res)=> {
         style:'error404.css',
         title:'Error 404'
        })
-  })
+})
 
 module.exports = router

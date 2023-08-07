@@ -2,8 +2,11 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const gitHubStrategy = require('passport-github2').Strategy
 const User = require('../dao/models/users.model')
+const Service = require('../routes/services/cart.services')
 const {createHash, isValidPass} = require ('../utils/bcrypt')
+const { githubClientId, githubSecret, githubCallBack} = require('../config/config')
 const fetch = require('node-fetch')
+const cartService= new Service()
  
 const initializePassport = () => {
 
@@ -34,6 +37,9 @@ const initializePassport = () => {
         {passReqToCallback:true, usernameField:'email'},
         async (req, username, password,done) => {
             try{
+                let data={}
+                let newCart = await cartService.postCart(data) 
+             
                 let userData = req.body
                 let userFound = await User.findOne({email:username})
                 if(userFound){
@@ -46,8 +52,9 @@ const initializePassport = () => {
                     email:userData.email,
                     age: userData.age || 25,
                     password:createHash(userData.password),
-                    rol: 'User'
-                }
+                    rol: 'User',
+                    cart:{_id:newCart._id}
+                } 
                 let result = await User.create(userNew)
                 done(null, result)
             }
@@ -58,6 +65,8 @@ const initializePassport = () => {
     ),
     passport.use('auth-github', new gitHubStrategy(
         {
+
+
             clientID: 'a3cde9aa35b565bcd7d5',
             clientSecret: '6024535e3de1e694688435d5233752e7ad8e9d22',
             callbackURL: "http://localhost:8080/auth/github/callback"
@@ -71,31 +80,37 @@ const initializePassport = () => {
                     'X-Github-Api-Version': '2022-11-28',
                 },
                 });
-
+                
                 const emails = await res.json();
                 const emailDetail = emails.find((email) => email.verified == true);
 
                 if (!emailDetail) {
                     return done(new Error('cannot get a valid email for this user'));
                 }
+                
+                let data={}
+                let newCart = await cartService.postCart(data) 
                 profile.email = emailDetail.email;
                 let user = await User.findOne({ email: profile.email });
-            if (!user) {
-                const newUser = {
-                first_name: profile._json.name || profile._json.login || 'noname',
-                last_name: profile._json.name || profile._json.login || 'no-last-name',
-                email:profile.email,
-                age: 18,
-                password:createHash('123'), 
-                rol: 'User'
-                };
-                let userCreated = await User.create(newUser);
-                console.log('User Registration succesful');
-                return done(null, userCreated);
-            } else {
-            console.log('User already exists');
-            return done(null, user);
-            }
+                
+                if (!user) {
+                    const newUser = {
+                    first_name: profile._json.name || profile._json.login || 'noname',
+                    last_name: profile._json.name || profile._json.login || 'no-last-name',
+                    email:profile.email,
+                    age: 18,
+                    password:createHash('123'), 
+                    rol: 'User',
+                    cart: {_id:newCart._id}
+                    };
+                    let userCreated = await User.create(newUser);
+                    console.log('User Registration succesful');
+                    return done(null, userCreated);
+                } else {
+                console.log('User already exists');
+                console.log('Esto client id es de github :' + githubClientId,' secret git :' + githubSecret)
+                return done(null, user);
+                }
             }
             catch(err) {
                 console.log('Error en auth github');
@@ -115,3 +130,18 @@ const initializePassport = () => {
 }
 
 module.exports =  initializePassport
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

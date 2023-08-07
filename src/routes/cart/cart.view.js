@@ -5,13 +5,17 @@ const CartView = express.Router()
 const Cart= require('../../dao/models/cart.model')
 const cartService= require('../services/cart.services')
 const Service = new cartService()
+const { isUser, isAdmin } = require("../../middlewares/middleware.auth");
 
   
 CartView.use(express.json())
 CartView.use(express.urlencoded({extended:true}))
 
-CartView.get('/:cId', async(req,res)=>{
-    let id = req.params.cId
+CartView.get('/', isUser, async(req,res)=>{
+    let session =req.session.user
+    let id = req.session.user.cart
+    console.log(id)
+    // let id = req.params.cId
     let cartData = await Cart.findOne({_id:id}).populate('products.product')
     // console.log(cartData) 
     const products= cartData.products.map(item=>{ 
@@ -29,11 +33,13 @@ CartView.get('/:cId', async(req,res)=>{
         }
 
     })
-    // console.log(products) 
+    
     return res.status(201).render('cart', {
         products:products, 
         style:'cart.css',
-        title:'Cart'}) 
+        title:'Cart',
+        session:session
+    }) 
 })
 
 module.exports= CartView

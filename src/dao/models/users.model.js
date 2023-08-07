@@ -33,7 +33,20 @@ const userSchema= new mongoose.Schema({
         type:String,
         required:true,
         default:'User'
+    },
+    cart:{
+        type:
+        {
+            cart:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref:'cart' 
+            }
+        }
     }
+    // cart: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "cart",
+    //   }
 })
 
 const User = mongoose.model('User', userSchema)

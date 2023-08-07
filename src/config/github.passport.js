@@ -6,8 +6,8 @@ const User = require('../dao/models/users.model')
 const gitHubPassport = () =>{
     passport.use('auth-github', new gitHubStrategy(
         {
-            clientID: 'a3cde9aa35b565bcd7d5',
-            clientSecret: '6024535e3de1e694688435d5233752e7ad8e9d22',
+            clientID: config.CLIENT_ID,
+            clientSecret: config.CLIENT_SECRET,
             callbackURL: "http://localhost:8080/auth/github/callback"
         },
         async (accessToken, refreshToken, profile, done)=>{
