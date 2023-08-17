@@ -1,14 +1,11 @@
 const express = require('express')
 const app = express()
-const {port, mongoUrl, secret} = require('./config/config')
-// require('dotenv').config({path:'src/.env'})
-// const PORT = process.env.PORT || 3000
-
+const {port, mongoUrl, secret} = require('./config/env.config')
 
 //Mongo
-const DataBase= require('./dao/mongoDao/db')
-const Product= require('./dao/models/products.model')
-const Chat= require('./dao/models/chat.model')
+const DataBase= require('./dao/mongo/db')
+const Product= require('./dao/mongo/models/products.model')
+const Chat= require('./dao/mongo/models/chat.model')
 
 // Public Folder
 app.use(express.static(__dirname + '/public'))
@@ -23,7 +20,7 @@ app.use(session({
     store: MongoStore.create({
         mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
         // ttl:'',
-        mongoUrl:mongoUrl
+        mongoUrl:mongoUrl+'ecommerce'
     }),
     secret:secret,
     resave:false,
@@ -31,7 +28,7 @@ app.use(session({
 
 }))
 // Passport Passport-Local
-const initializePassport = require('./config/passport')
+const initializePassport = require('./config/passport.config')
 const passport = require('passport')
 initializePassport() //Importante que este antes de el paasport.initialize
 app.use(passport.initialize())
@@ -41,31 +38,31 @@ app.use(passport.session())
 
 // Routes
 //Products
-const routesProduct = require('./routes/products/products.route')
+const routesProduct = require('./routes/products.route')
 app.use('/api/product', routesProduct)
-const viewsProducts= require('./routes/products/products.view')
+const viewsProducts= require('./routes/products.route.views')
 app.use('/products',viewsProducts)
 //Cart
-const routesCart = require('./routes/cart/cart.route') 
+const routesCart = require('./routes/cart.route') 
 app.use('/api/cart', routesCart)
-const viewsCart = require('./routes/cart/cart.view')
+const viewsCart = require('./routes/cart.route.view')
 app.use('/cart', viewsCart)
 // Users
-const routesUsers = require('./routes/user/users.route')
+const routesUsers = require('./routes/user.route')
 app.use('/api/user',routesUsers)
 // Sessions
-const sessions = require('./routes/sessions/sessions.route')
+const sessions = require('./routes/sessions.route')
 app.use('/session', sessions)
-const apiSession = require('./routes/sessions/session.api')
+const apiSession = require('./routes/sessions.route.api')
 app.use('/api/session/', apiSession)
 // auth.pasport
-const authPassport = require('./routes/passport/auth.passport')
+const authPassport = require('./routes/passport.route')
 app.use('/auth', authPassport)
 //Real time Products
-const routesRealTime = require('./routes/realTimeProduct/realTimeProduct.route')
+const routesRealTime = require('./routes/realTimeProducts.route')
 app.use('/realTimeProducts', routesRealTime)
 // Chat
-const routesChat = require('./routes/chat/chat.route')
+const routesChat = require('./routes/chat.route')
 app.use('/chat', routesChat)
 
 
@@ -168,7 +165,6 @@ app.get('/', (req,res)=> {
     if(req.session.user){
         let session = req.session.user
         let rol = req.session.user.rol 
-        console.log(req.session.user) 
         const data={
             title:'ecommerce backend',
             message:'Ecommerce backend  Index',
@@ -190,6 +186,6 @@ app.get('/', (req,res)=> {
 server.listen(port, ()=>{
     console.log('Server is runing on port: ' + port)
     const database= new DataBase(mongoUrl)
-    database.connect()
+    database.connect() 
 })
 
