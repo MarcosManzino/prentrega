@@ -114,8 +114,7 @@ const delProductById = async (req, res) => {
 const putProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, thumbnail, code, stock, category, status } =
-      req.body;
+    const { title, description, thumbnail, code, stock, category, status } = req.body;
     const data = req.body;
     await Service.updateOne(
       id,

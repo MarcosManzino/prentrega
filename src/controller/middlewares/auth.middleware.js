@@ -6,7 +6,7 @@ function isUser(req, res, next) {
     title:'Error de autenticacion'}); 
   }
   
-  function isAdmin(req, res, next) {
+function isAdmin(req, res, next) {
     let session= req.session.user 
     console.log('Esto es de auth admin : '+ session)
     if (req.session?.user?.rol === 'Admin') {

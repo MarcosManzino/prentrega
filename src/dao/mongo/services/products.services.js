@@ -2,10 +2,11 @@ const Product = require("../models/products.model");
 
 // Agregar metodo getAllproduct solo con un Product.find()
 
-class ProductServices {
+class ProductServices { 
+  
   async getAllProducts () {
-    const products = await Product.find();
-    return products;
+    const result = await Product.find();
+    return result;
   }
   async getAll(page, limit, sort, data) {
     if (sort) {
@@ -29,20 +30,20 @@ class ProductServices {
     }
   }
   async getById(_id) {
-    const product = await Product.findOne({ _id: _id });
-    return product;
+    const result = await Product.findOne({ _id: _id });
+    return result;
   }
   async createOne(data) {
-    const productCreated = await Product.create(data);
-    return productCreated;
+    const result = await Product.create(data);
+    return result;
   }
   async createMany(data) {
-    const productsCreated = await Product.insertMany(data);
-    return productsCreated;
+    const result = await Product.insertMany(data);
+    return result;
   }
   async deletedOne(_id) {
-    const deleted = await Product.deleteOne({ _id: _id });
-    return deleted;
+    const result = await Product.deleteOne({ _id: _id });
+    return result;
   }
   async updateOne(
     _id,
@@ -54,11 +55,11 @@ class ProductServices {
     category,
     status
   ) {
-    const productUpDate = await Product.updateOne(
+    const result = await Product.updateOne(
       { _id: _id },
       { title, description, thumbnail, code, stock, category, status }
     );
-    return productUpDate;
+    return result;
   }
 }
 module.exports = ProductServices;

@@ -1,29 +1,66 @@
 const Cart = require("../models/cart.model");
 const uuid4= require('uuid4')
 
-class CartServices { 
-  async getCart(_id) {
-    const cart = await Cart.paginate({ _id: _id }, { page: 1 });
-    return cart;
+class CartServices {  
+ 
+  async getCarts() {
+    try{
+      const result = await Cart.find();
+      return result;
+    }catch (err){
+      console.log('Cartservice - getCart: ' + err)
+      return null
+    }
+    
   }
-  async getById(_id) {
-    const cart = await Cart.findOne({ _id: _id });
-    return cart;
+  async getCartById(_id) {
+    try{
+      const result = await Cart.findOne({ _id: _id });
+      return result;
+    }
+    catch(err){
+      console.log('Cartservice - getCartByID: ' + err)
+      return null
+    }
   }
   async postCart(data) {
-    const tiempoTranscurrido = Date.now();
-    const hoy = new Date(tiempoTranscurrido);
-    data.date = hoy.toDateString() + ' ' +uuid4()
-    console.log(data.date);
-    const cart = await Cart.create(data);
-    return cart;
+    try{
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+      data.date = hoy.toDateString() + ' ' + uuid4()
+      console.log(data.date);
+      const result = await Cart.create(data);
+      return result;
+    }
+    catch(err){
+      console.log('Cartservice - postCart: ' + err)
+      return null
+    }
+    
   } 
-  async deleteProducts(_id) {
-    const cart = await Cart.findOne({ _id: _id });
-    let arr = [];
-    cart.products = arr;
-    let update = await Cart.updateOne({ _id: _id }, cart);
-    return update;
+  async updateCart (_id, data){
+    try{
+      const result = await Cart.updateOne({_id:_id}, data);
+      return result;
+    }
+    catch(err){
+      console.log('Cartservice - updateCart: ' + err)
+      return null
+    }
+  }
+  
+  async delProductsCart(_id) {
+    try {
+      const data = await this.getCartById(_id)
+      let arr = [];
+      data.products = arr;
+      let result = await this.updateCart(_id, data)
+      return result;
+    }
+    catch (err) {
+      console.log('Cartservice - delProductsCart: ' + err)
+      return null
+    }
   }
 }
 module.exports = CartServices;
