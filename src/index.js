@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const {port, mongoUrl, secret} = require('./config/env.config')
+const { CustomError } = require('./services/errors/CustomErrors');
+const { EErrors } = require('./services/errors/enums');
+const { generateProductErrorInfo } = require('./services/errors/info');
 
 //Mongo
 const DataBase= require('./dao/mongo/db')
@@ -85,81 +88,47 @@ io.on('connection', (socket)=>{
 
     // Comunicacion con realTimeProduct.js
     socket.on('addProduct' ,(data)=>{
-        let product= new Product(data)
-        product.save()
-        .then(pr=>{
-
-            Product.find({}).lean()
+        try {
+            let product= new Product(data)
+            // Verificar si los datos son válidos
+            if (!data.title || !data.description || !data.code || !data.price || !data.stock || !data.category) {
+              // Lanzar un error personalizado si faltan datos
+              throw CustomError.createError({
+                name: 'InvalidDataError',
+                message: generateProductErrorInfo(data),
+                code: EErrors.INVALID_PARAM
+              });
+            }
+            product.save()
             .then(pr=>{
-                io.sockets.emit('newData', pr)
+                Product.find({}).lean()
+                .then(pr=>{
+                    io.sockets.emit('newData', pr)
+                })
+                .catch(err=>{
+                    console.log('Error loading product');
+                    socket.emit('productError', 'Error loading product');
+                })
             })
             .catch(err=>{
-                res.status(500).send(
-                    console.log('Error loading product')
-                )
+                console.log('Error loading product');
+                socket.emit('productError', 'Error loading product');
             })
-        })
-        .catch(err=>{
-            res.status(500).send(
-                console.log('Error loading product')
-            )
-        })   
+        } catch (e) {
+            console.log(e);
+            // Manejar el error personalizado
+            if (e instanceof CustomError && e.code === EErrors.INVALID_PARAM) {
+                socket.emit('productError', e.message);
+            } else {
+                socket.emit('productError', 'Something went wrong :(');
+            }
+        }
+    });
+    
+    
+});
 
-    })
-    socket.on('delProduct',(data)=>{
-        let {id} =data
-        console.log(id)
-        Product.deleteOne({_id:id})
-        .then(pr =>{ 
-            Product.find({}).lean()
-            .then(pr=>{
-                io.sockets.emit('newData', pr)
-            })
-            .catch(err=>{
-                res.status(500).send(
-                    console.log('Error loading product')
-                )
-            })
-        })
-        .catch(err=>{
-            res.status(500).send(
-                console.log('Error Delete product')
-            )
-        })
-        
-    })
 
-    // Chat sockets
-    socket.on('new-message', (data)=>{
-        
-            Chat.findOne({user:data.user }).exec()
-            .then(pr=>{
-
-                if(pr){
-                    Chat.updateOne({_id:pr._id},data)
-                    .then(pr=>{
-                        messages.push(data)
-                        io.sockets.emit('messages-all', messages)
-                    })
-                    .catch(err=>{
-                        console.log('Error send message')   
-                    })
-                }
-                else{
-                    let chat= new Chat(data)
-                    chat.save()
-                    .then(pr=>{
-                    messages.push(data)
-                    io.sockets.emit('messages-all', messages)
-                    })
-                    .catch(err=>{
-                        console.log('Error send message')   
-                    })
-                }
-            })
-    })
-
-})
 
 app.get('/', (req,res)=> {  
     if(req.session.user){

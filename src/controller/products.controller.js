@@ -1,5 +1,8 @@
 const ProductServices = require("../dao/mongo/services/products.services");
 const Service = new ProductServices();
+const { CustomError } = require('../services/errors/CustomErrors');
+const { EErrors } = require('../services/errors/enums');
+const { generateProductErrorInfo } = require('../services/errors/info');
 
 
 const getProducts = async (req, res) => {
@@ -75,6 +78,7 @@ const postProduct = async (req, res) => {
     });
   }
 }
+
 const postManyProducts = async (req, res) => {
   try {
     const data = req.body;
