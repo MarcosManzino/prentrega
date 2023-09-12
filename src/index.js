@@ -1,24 +1,21 @@
-const express = require('express')
-const app = express()
-const {port, mongoUrl, secret} = require('./config/env.config')
-const { CustomError } = require('./services/errors/CustomErrors');
-const { EErrors } = require('./services/errors/enums');
-const { generateProductErrorInfo } = require('./services/errors/info');
+const express = require('express'); 
+const app = express();
+const {port, mongoUrl, secret} = require('./config/env.config');
 
 //Mongo
-const DataBase= require('./dao/mongo/db')
-const Product= require('./dao/mongo/models/products.model')
-const Chat= require('./dao/mongo/models/chat.model')
+const DataBase= require('./utils/mongo');
+const Product= require('./dao/mongo/models/products.model');
+const Chat= require('./dao/mongo/models/chat.model');
 
 // Public Folder
-app.use(express.static(__dirname + '/public'))
-app.use(express.urlencoded({extended:true}))
+app.use(express.static(__dirname + '/public'));
+app.use(express.urlencoded({extended:true}));
 
 // Sessions requires
-const session = require('express-session')
-const cookieParser = require('cookie-parser')
-const MongoStore = require('connect-mongo')
-app.use(cookieParser()) 
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const MongoStore = require('connect-mongo');
+app.use(cookieParser()); 
 app.use(session({
     store: MongoStore.create({
         mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
@@ -29,57 +26,73 @@ app.use(session({
     resave:false,
     saveUninitialized:false
 
-}))
+}));
 // Passport Passport-Local
-const initializePassport = require('./config/passport.config')
-const passport = require('passport')
-initializePassport() //Importante que este antes de el paasport.initialize
-app.use(passport.initialize())
-app.use(passport.session())
+const initializePassport = require('./config/passport.config');
+const passport = require('passport');
+initializePassport(); //Importante que este antes de el paasport.initialize
+app.use(passport.initialize());
+app.use(passport.session());
 
- 
+// logger
+const addLogger = require('./utils/logger');
+app.use(addLogger);
 
 // Routes
+// Views
+// const routesViews = require('./routes/views.route');
+// app.use('/', routesViews)
 //Products
-const routesProduct = require('./routes/products.route')
-app.use('/api/product', routesProduct)
-const viewsProducts= require('./routes/products.route.views')
-app.use('/products',viewsProducts)
+const routesProduct = require('./routes/products.route');
+app.use('/api/product', routesProduct);
+const viewsProducts= require('./routes/products.route.views');
+app.use('/products',viewsProducts);
 //Cart
-const routesCart = require('./routes/cart.route') 
-app.use('/api/cart', routesCart)
-const viewsCart = require('./routes/cart.route.view')
-app.use('/cart', viewsCart)
+const routesCart = require('./routes/cart.route'); 
+app.use('/api/cart', routesCart);
+const viewsCart = require('./routes/cart.route.view');
+app.use('/cart', viewsCart);  
 // Users
-const routesUsers = require('./routes/user.route')
-app.use('/api/user',routesUsers)
+// const routesUsers = require('./routes/user.route');
+// app.use('/api/user',routesUsers);
 // Sessions
-const sessions = require('./routes/sessions.route')
-app.use('/session', sessions)
-const apiSession = require('./routes/sessions.route.api')
-app.use('/api/session/', apiSession)
+const sessions = require('./routes/sessions.route');
+app.use('/session', sessions);
+const apiSession = require('./routes/sessions.route.api');
+app.use('/api/session/', apiSession);
 // auth.pasport
-const authPassport = require('./routes/passport.route')
-app.use('/auth', authPassport)
+const authPassport = require('./routes/passport.route');
+app.use('/auth', authPassport);
 //Real time Products
-const routesRealTime = require('./routes/realTimeProducts.route')
-app.use('/realTimeProducts', routesRealTime)
+const routesRealTime = require('./routes/realTimeProducts.route');
+app.use('/realTimeProducts', routesRealTime);
 // Chat
-const routesChat = require('./routes/chat.route')
-app.use('/chat', routesChat)
-
+const routesChat = require('./routes/chat.route');
+app.use('/chat', routesChat);
+// Mailing
+const emailRoute = require('./routes/email.route');
+app.use('/api/email', emailRoute);
+// Twilio
+const smsRoute = require('./routes/sms.route');
+app.use('/api/sms', smsRoute);
+// Mcks
+const mocksRoute = require('./routes/mocks.route');
+app.use('/api/mocks', mocksRoute);
+// Logger
+const loggerRoute = require('./routes/logger.route');
+app.use('/api/logger',loggerRoute);
 
 // Handlebars
-const handlebars = require('express-handlebars')
-app.engine('handlebars', handlebars.engine())
-app.set('view engine', 'handlebars')
-app.set('views', __dirname + '/views/')
+const handlebars = require('express-handlebars');
+app.engine('handlebars', handlebars.engine());
+app.set('view engine', 'handlebars');
+app.set('views', __dirname + '/views/');
 
 // Sockets set
-const {Server} = require('socket.io')
-const http = require('http')
-const server = http.createServer(app)
-const io = new Server(server)
+const {Server} = require('socket.io');
+const http = require('http');
+const server = http.createServer(app);
+const io = new Server(server);
 
 const messages = [] 
 io.on('connection', (socket)=>{
@@ -88,47 +101,81 @@ io.on('connection', (socket)=>{
 
     // Comunicacion con realTimeProduct.js
     socket.on('addProduct' ,(data)=>{
-        try {
-            let product= new Product(data)
-            // Verificar si los datos son válidos
-            if (!data.title || !data.description || !data.code || !data.price || !data.stock || !data.category) {
-              // Lanzar un error personalizado si faltan datos
-              throw CustomError.createError({
-                name: 'InvalidDataError',
-                message: generateProductErrorInfo(data),
-                code: EErrors.INVALID_PARAM
-              });
-            }
-            product.save()
+        let product= new Product(data)
+        product.save()
+        .then(pr=>{
+
+            Product.find({}).lean()
             .then(pr=>{
-                Product.find({}).lean()
-                .then(pr=>{
-                    io.sockets.emit('newData', pr)
-                })
-                .catch(err=>{
-                    console.log('Error loading product');
-                    socket.emit('productError', 'Error loading product');
-                })
+                io.sockets.emit('newData', pr)
             })
             .catch(err=>{
-                console.log('Error loading product');
-                socket.emit('productError', 'Error loading product');
+                res.status(500).send(
+                    console.log('Error loading product')
+                )
             })
-        } catch (e) {
-            console.log(e);
-            // Manejar el error personalizado
-            if (e instanceof CustomError && e.code === EErrors.INVALID_PARAM) {
-                socket.emit('productError', e.message);
-            } else {
-                socket.emit('productError', 'Something went wrong :(');
-            }
-        }
-    });
-    
-    
+        })
+        .catch(err=>{
+            res.status(500).send(
+                console.log('Error loading product')
+            )
+        })   
+
+    })
+    socket.on('delProduct',(data)=>{
+        let {id} =data
+        console.log(id)
+        Product.deleteOne({_id:id})
+        .then(pr =>{ 
+            Product.find({}).lean()
+            .then(pr=>{
+                io.sockets.emit('newData', pr)
+            })
+            .catch(err=>{
+                res.status(500).send(
+                    console.log('Error loading product')
+                )
+            })
+        })
+        .catch(err=>{
+            res.status(500).send(
+                console.log('Error Delete product')
+            )
+        })
+        
+    })
+
+    // Chat sockets
+    socket.on('new-message', (data)=>{
+        
+            Chat.findOne({user:data.user }).exec()
+            .then(pr=>{
+
+                if(pr){
+                    Chat.updateOne({_id:pr._id},data)
+                    .then(pr=>{
+                        messages.push(data)
+                        io.sockets.emit('messages-all', messages)
+                    })
+                    .catch(err=>{
+                        console.log('Error send message')   
+                    })
+                }
+                else{
+                    let chat= new Chat(data)
+                    chat.save()
+                    .then(pr=>{
+                    messages.push(data)
+                    io.sockets.emit('messages-all', messages)
+                    })
+                    .catch(err=>{
+                        console.log('Error send message')   
+                    })
+                }
+            })
+    })
+
 });
-
-
 
 app.get('/', (req,res)=> {  
     if(req.session.user){
@@ -150,11 +197,11 @@ app.get('/', (req,res)=> {
         }
         res.render('index', data) 
     }
-})
+});
 
 server.listen(port, ()=>{
     console.log('Server is runing on port: ' + port)
     const database= new DataBase(mongoUrl)
     database.connect() 
-})
+});
 

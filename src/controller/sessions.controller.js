@@ -1,8 +1,5 @@
-
 const UserServices = require("../dao/mongo/services/users.services");
 const Service = new UserServices();
-
-
 
 const sessionGetRegister = (req, res) => {
   res.status(200).render("register", {
@@ -17,10 +14,10 @@ const sessionPostRegister = (req, res) => {
   req.session.user = {
     _id: req.user._id,
     email: req.user.email,
-    first_name: req.user.first_name,
-    last_name: req.user.last_name,
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
     rol: req.user.rol,
-    cart:req.user.cart._id 
+    cart:req.user.cart 
   };
   console.log(req.session.user)
   return res.redirect("/products");
@@ -38,16 +35,17 @@ const sessionPostLogin = (req, res) => {
   req.session.user = {
     _id: req.user._id,
     email: req.user.email,
-    first_name: req.user.first_name,
-    last_name: req.user.last_name,
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
     rol: req.user.rol,
-    cart:req.user.cart._id
+    cart:req.user.cart 
   };
   return res.redirect("/session/profile");
 }
 const sessionGetProfile = (req, res) => {
     let session = req.session.user
-    let rol = req.session.user.rol 
+    let rol = req.session.user.rol
+    console.log('Esto es rol: ' + rol) 
     console.log(req.session.user)  
     const data={
         title:'Profile',

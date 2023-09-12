@@ -1,6 +1,6 @@
 // Index del cliente!!!!
 console.log('Hola soy el cliente')
-
+ 
 const socket= io()
 // le indicamos el evento que queremos que escuche, esto viene del socket.emit del back
 socket.on('wellcome', (data)=> {

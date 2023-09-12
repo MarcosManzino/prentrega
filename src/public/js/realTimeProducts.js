@@ -1,5 +1,5 @@
 console.log('Hola soy el cliente')
-
+ 
 const socket = io()
 
 socket.on('wellcome', (data)=>{
@@ -39,7 +39,7 @@ function addProduct(){
             category:document.getElementById('category').value,
             status:true,    
     }
-    socket.emit('addProduct', newProduct) 
+    socket.emit('addProduct', newProduct)  
 return false
 }
 function delProduct(){

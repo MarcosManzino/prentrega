@@ -19,6 +19,16 @@
     justify-content: center;
     align-items: center;
 }
+.box-total{
+    padding: 20px;
+	margin: 40px;
+    box-shadow: 0 12px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    align-items: center;
+}
 
 .table-img{
     width: 50px;

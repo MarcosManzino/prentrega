@@ -1,6 +1,6 @@
 const express = require('express')
 const passport = require('passport')
-const { isUser, isAdmin } = require("../controller/middlewares/auth.middleware");
+const { isUser, isAdmin } = require("../middlewares/auth.middleware");
 const{ getUser,
   getUserById,
   postUser,

@@ -2,7 +2,7 @@ const Cart = require("../models/cart.model");
 const uuid4= require('uuid4')
 
 class CartServices {  
- 
+  
   async getCarts() {
     try{
       const result = await Cart.find();
@@ -25,10 +25,10 @@ class CartServices {
   }
   async postCart(data) {
     try{
-      const tiempoTranscurrido = Date.now();
-      const hoy = new Date(tiempoTranscurrido);
-      data.date = hoy.toDateString() + ' ' + uuid4()
-      console.log(data.date);
+      // const tiempoTranscurrido = Date.now();
+      // const hoy = new Date(tiempoTranscurrido);
+      // data.date = hoy.toDateString() + ' ' + uuid4()
+      // console.log(data.date);
       const result = await Cart.create(data);
       return result;
     }
@@ -62,5 +62,6 @@ class CartServices {
       return null
     }
   }
+  
 }
 module.exports = CartServices;

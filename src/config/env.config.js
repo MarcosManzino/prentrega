@@ -18,9 +18,10 @@ dotenv.config({
 // dotenv.config({path:'./src/config/.env.development'}) 
 
 module.exports = {
-    port:process.env.PORT || 8080,
+    port:process.env.PORT || 3000,
     mongoUrl: process.env.MONGO_URL,
-    secret: process.env.SECRET, 
+    secret: process.env.SECRET,
+    persistence: process.env.PERSISTENCE,
     githubClientId: process.env.CLIENT_ID_GITHUB,
     githubSecret: process.env.CLIENT_SECRET_GITHUB,
     githubCallBack: process.env.CALL_BACK_URL_GITHUB,
@@ -29,7 +30,8 @@ module.exports = {
     twilioSID: process.env.TWILIO_ACCOUNT_SID,
     twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
     twilioNumber: process.env.TWILIO_SMS_NUMBER,
-    userCellNumber: process.env.CELL_NUMBER
+    userCellNumber: process.env.CELL_NUMBER,
+    environment: environment
 
 }
  

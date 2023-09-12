@@ -1,12 +1,13 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const gitHubStrategy = require('passport-github2').Strategy
-const User = require('../dao/mongo/models/users.model')
-const Service = require('../dao/mongo/services/cart.services')
+const UserModel = require('../dao/mongo/models/users.model')
+const cartService = require('../services/carts.service')
 const {createHash, isValidPass} = require ('../utils/bcrypt')
 const { githubClientId, githubSecret, githubCallBack} = require('../config/env.config')
 const fetch = require('node-fetch')
-const cartService= new Service()
+
+// const cartService = new CartService()
  
 const initializePassport = () => {
 
@@ -15,12 +16,13 @@ const initializePassport = () => {
         {passReqToCallback:true, usernameField:'email'}, 
         async (req, username, password, done)=>{
             try{
-                let userFound = await User.findOne({email:username})
+                let userFound = await UserModel.findOne({email:username})
+                console.log(userFound)
                 if (!userFound) {
                     console.log('User Not Found with username (email) ' + username);
                     return done(null, false);
                   }
-                  if (!isValidPass(password, userFound.password)) {
+                  if (!isValidPass(password, userFound.password[0])) {
                     console.log('Invalid Password');
                     return done(null, false);
                   }
@@ -37,31 +39,32 @@ const initializePassport = () => {
         {passReqToCallback:true, usernameField:'email'},
         async (req, username, password,done) => {
             try{
-                let data={}
-                let newCart = await cartService.postCart(data) 
-             
+                let newCart = await cartService.addCart() 
                 let userData = req.body
-                let userFound = await User.findOne({email:username})
+                
+                let userFound = await UserModel.findOne({email:username})
                 if(userFound){
                     console.log('User already exists')
                     done(null,false)
                 }
                 let userNew = {
-                    first_name: userData.first_name,
-                    last_name:userData.last_name || 'no-last-name',
+                    firstName: userData.firstName,
+                    lastName:userData.lastName || 'no-last-name',
                     email:userData.email,
-                    age: userData.age || 25,
+                    age: userData.age || 18,
                     password:createHash(userData.password),
                     rol: 'User',
-                    cart:{_id:newCart._id}
+                    cart:newCart._id
+                  
                 } 
-                let result = await User.create(userNew)
+                console.log(userNew)
+                let result = await UserModel.create(userNew)
                 done(null, result)
             }
             catch (err){
                 return done('Error creating user' + err)
             }
-        })
+        }) 
     ),
     passport.use('auth-github', new gitHubStrategy(
         { 
@@ -81,30 +84,28 @@ const initializePassport = () => {
                 
                 const emails = await res.json();
                 const emailDetail = emails.find((email) => email.verified == true);
-
+ 
                 if (!emailDetail) {
-                    return done(new Error('cannot get a valid email for this user'));
-                }
-                
-                let data={}
-                let newCart = await cartService.postCart(data) 
-                profile.email = emailDetail.email;
-                let user = await User.findOne({ email: profile.email });
-                
-                if (!user) {
+                    return done(new Error('Cannot get a valid email for this user'));
+                  }
+                  profile.email = emailDetail.email;
+        
+                  let user = await UserModel.findOne({ email: profile.email });
+                  if (!user) {
+                    let userCart = await cartService.addCart()
                     const newUser = {
-                    first_name: profile._json.name || profile._json.login || 'noname',
-                    last_name: profile._json.name || profile._json.login || 'no-last-name',
-                    email:profile.email,
-                    age: 18,
-                    password:createHash('123'), 
-                    rol: 'User',
-                    cart: {_id:newCart._id}
+                      email: profile.email,
+                      firstName: profile._json.name || profile._json.login || 'Avatar',
+                      lastName: profile._json.name ||'Avatar',
+                      password: null,
+                      rol: 'User',
+                      cart: userCart._id
                     };
-                    let userCreated = await User.create(newUser);
-                    console.log('User Registration succesful');
+                    let userCreated = await UserModel.create(newUser);
+                    console.log('User registration succesful');
                     return done(null, userCreated);
-                } else {
+                  }
+                  else {
                 console.log('User already exists');
                 return done(null, user);
                 }
@@ -119,9 +120,9 @@ const initializePassport = () => {
     ),
     passport.serializeUser((user,done)=>{
         done(null,user._id)
-    }),
+    }), 
     passport.deserializeUser(async (id,done)=>{
-        let user= await User.findById(id)
+        let user= await UserModel.findById(id)
         done(null,user)
     })
 }

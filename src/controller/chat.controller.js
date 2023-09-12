@@ -2,7 +2,7 @@ const getChat = (req, res) => {
   let session = req.session.user
   let rol = req.session.user.rol 
   const data = {
-    title: "Chat",
+    title: "Chat", 
     message: "Ecommerce backend  Index",
     style: "chat.css",
   };

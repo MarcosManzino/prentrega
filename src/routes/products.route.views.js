@@ -1,13 +1,10 @@
 const express = require("express");
-const {getProductsViews, getProductsViewsError} = require ('../controller/products.views.controller')
 const productViews = express.Router();
+const {productsView,getViewsError} = require('../controller/views.controller');
 
-productViews.get("/", getProductsViews);
-
-productViews.get("*", getProductsViewsError);
+productViews.get("/", productsView);
+productViews.get("*", getViewsError); 
 
 module.exports = productViews;
 
-
-// const ProductServices = require("../dao/mongo/services/products.services");
-// const Service = new ProductServices();
+  

@@ -1,4 +1,4 @@
-const mongoose= require('mongoose')
+const mongoose= require('mongoose') 
 
 const ChatSchema = new mongoose.Schema({
     user: {
@@ -11,7 +11,7 @@ const ChatSchema = new mongoose.Schema({
         unique:false,
         required:true, 
     }
-  });
+  },{ versionKey: false });
 
-const Chat = mongoose.model('message', ChatSchema)
-module.exports = Chat
+const ChatModel= mongoose.model('message', ChatSchema)
+module.exports = ChatModel

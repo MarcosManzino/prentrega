@@ -1,10 +1,7 @@
 const mongoose= require('mongoose')
-
-url= 'mongodb+srv://correadamian2019:<password>@cluster0.ecgm0fn.mongodb.net/'
-
 class ManagerMongo {
 
-    constructor (url){
+    constructor (url){ 
         this.url = url
     } 
   
@@ -16,4 +13,4 @@ class ManagerMongo {
     
 }
 
-module.exports=ManagerMongo
+module.exports = ManagerMongo 

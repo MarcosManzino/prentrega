@@ -2,12 +2,12 @@ const mongoose= require('mongoose')
 const userPaginate = require('mongoose-paginate-v2')
 
 const userSchema= new mongoose.Schema({
-    first_name:{
+    firstName:{
         type:String,
         unique:false,
         required:true
-    },
-    last_name:{
+    }, 
+    lastName:{
         type:String,
         unique:false,
         required:true
@@ -24,31 +24,21 @@ const userSchema= new mongoose.Schema({
         default:18
     },
     password:{
-        type:String,
-        unique:false,
-        required:true,
-        default:123456
+        type: [String, null],
+        max: 100,
     },
     rol:{
         type:String,
         required:true,
         default:'User'
     },
-    cart:{
-        type:
-        {
-            cart:{
-                type: mongoose.Schema.Types.ObjectId,
-                ref:'cart' 
-            }
-        }
-    }
-    // cart: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "cart",
-    //   }
-})
+    cart: {
+        type: String,
+        required: false
+      }
+},{ versionKey: false })
 
-const User = mongoose.model('User', userSchema)
-module.exports = User
+const userModel = mongoose.model('User', userSchema)
+module.exports = userModel
+
 

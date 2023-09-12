@@ -15,7 +15,7 @@ const ProductSchema = new mongoose.Schema({
     },
     price:{
         type:Number,
-        unique:false,
+        unique:false, 
         required:true,
     },
     thumbnail:{
@@ -43,9 +43,8 @@ const ProductSchema = new mongoose.Schema({
         type:Boolean,
         default:true
     }, 
-}
-);
+},{ versionKey: false });
 ProductSchema.plugin(mongoosePaginate);
 
-const Product= mongoose.model('products', ProductSchema)
-module.exports = Product
+const ProductModel = mongoose.model('products', ProductSchema)
+module.exports = ProductModel

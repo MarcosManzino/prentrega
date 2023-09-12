@@ -1,16 +1,18 @@
 const mongoose = require('mongoose')
+const uuid4= require('uuid4') 
+
+
+const date = new Date(Date.now());
 
 const ticketSchema = new mongoose.Schema({
     code:{
-        type:String,
-        unique:true,
-        required:true,
-
+        type: String,
+        default: uuid4(),
+ 
     },
     purchase_datetime:{
-        type:String,
-        unique:false,
-        required:true,
+        type: String,
+        default: date.toString()
     },
     amount:{
         type:Number, 
@@ -19,11 +21,10 @@ const ticketSchema = new mongoose.Schema({
     },
     purchaser:{
         type:String,
-        unique:false,
-        required:true,
+      
     }
-})
+},{ versionKey: false })
 
-const Ticket = mongoose.model('ticket', ticketSchema)
+const TicketModel = mongoose.model('ticket', ticketSchema)
 
-module.exports= Ticket
+module.exports= TicketModel

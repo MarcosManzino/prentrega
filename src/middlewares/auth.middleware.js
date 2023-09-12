@@ -15,5 +15,12 @@ function isAdmin(req, res, next) {
     return res.status(403).render('error', { error: 'Error de autorización!, Debes tener permisos de Administrador para acceder a esta página.', style:'error404.css',
     title:'Error de autorización', session:session, User:req.session.user });
   }
+  
+  function goToLogin(req, res, next){
+    if (req.session?.user?.email) {
+      return next();
+    }
+    return res.status(401).render('login', { });
+  }
 
-  module.exports = { isUser,isAdmin}
+  module.exports = { isUser,isAdmin, goToLogin}
