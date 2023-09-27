@@ -33,5 +33,5 @@ module.exports = {
     userCellNumber: process.env.CELL_NUMBER,
     environment: environment
 
-}
+} 
  

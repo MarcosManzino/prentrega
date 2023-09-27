@@ -4,7 +4,6 @@ const productModel = require('./mongo/classes/products.dao.js');
 const chatModel = require('./mongo/classes/chat.dao.js');
 const ticketModel = require('./mongo/classes/tickets.dao.js');
 const userModel = require('./mongo/classes/users.dao.js')
-let CartMethods, ProductMethods, ChatMethods, TicketMethods, UserMethods;
   
 switch (persistence) {
     case 'MONGO':
