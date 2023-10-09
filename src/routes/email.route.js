@@ -9,7 +9,7 @@ router.use(express.urlencoded({ extended: true }));
 
 router.get('/', sendEmail);
 router.get('/attachments', sendMailWhitAttachments);
-
+ 
 router.get('/forgot-password', forgotPass);
 router.post('/reset-info',sendResetPass );
 router.get('/reset-form/', resetForm); 

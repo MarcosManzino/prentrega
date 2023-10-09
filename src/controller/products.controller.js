@@ -9,7 +9,7 @@ const { generateProductErrorInfo } = require('../services/errors/messages/creati
  
  
 
-const getWithQuerys = async (req,res) =>{
+const getWithQuerys = async (req,res) =>{ 
       try {
           let {limit = 4, page = 1, query, sort} = req.query
           if(sort && (sort !== 'asc' && sort !== 'desc')){
@@ -29,10 +29,10 @@ const getWithQuerys = async (req,res) =>{
   }
 const getProductById = async (req, res) =>{
       try {
-          const id = req.params.id;
-          const product = await productService.getProductById(id);
+          const pid = req.params.pid;
+          const product = await productService.getProductById(pid);
           res.status(200).json({status:"success",
-          message: `Product with id:${id}`, payload: product})
+          message: `Product with id:${pid}`, payload: product})
   
       } catch (error) {
           res.status(400).json({status: "error",
@@ -66,23 +66,23 @@ const addProduct = async (req, res) =>{
   }
 const deleteProduct = async (req, res) =>{
       try {
-          let id = req.params.id;
+          let pid = req.params.pid;
           let rol = req.session.user.rol
           let email = req.session.user.email
           if(rol === 'Premium'){
-            let productFound = await productService.getProductById(id)
+            let productFound = await productService.getProductById(pid)
             if(productFound.owner === email){
               const product = await productService.deleteProduct(id);
-              res.status(200).json({status:"success", message: `The product with id: ${id} was deleted succesfully!`, payload: product
+              res.status(200).json({status:"success", message: `The product with id: ${pid} was deleted succesfully!`, payload: product
             })
               }
               else{
-                res.status(400).send({stasus:'error', message:`The product with id: ${id} could not be removed!`})
+                res.status(400).send({stasus:'error', message:`The product with id: ${pid} could not be removed!`})
               }
           }
           else{
-            const product = await productService.deleteProduct(id);
-            res.status(200).json({status:"success", message: `The product with id: ${id} was deleted succesfully!`, payload: product
+            const product = await productService.deleteProduct(pid);
+            res.status(200).json({status:"success", message: `The product with id: ${pid} was deleted succesfully!`, payload: product
             })
           }
       } catch (error) {

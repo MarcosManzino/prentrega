@@ -6,18 +6,18 @@ const {
     addProduct,
     addManyProducts,
     deleteProduct,
-    updateProduct,
-    getProductError
+    updateProduct, 
+    getProductError 
    } = require ('../controller/products.controller');
 const router = new express.Router();
 router.use(express.json()); 
 router.use(express.urlencoded({ extended: true }));
 
 router.get("/", getWithQuerys);
-router.get("/:id", isAdminPrimium, getProductById);  
+router.get("/:pid", isAdminPrimium, getProductById);  
 router.post("/",isAdminPrimium, addProduct);
 router.post("/many", isAdminPrimium, addManyProducts);
-router.delete("/:id", isAdminPrimium, deleteProduct); 
+router.delete("/:pid", isAdminPrimium, deleteProduct); 
 router.put("/:id", isAdminPrimium,updateProduct);
 router.get("*", getProductError);
 

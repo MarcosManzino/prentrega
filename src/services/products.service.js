@@ -1,6 +1,6 @@
 const { ProductMethods } = require ('../dao/factory.js')
   
-class ProductService {
+class ProductService { 
 
     async getAll(page, limit, sort, query) {
         try {

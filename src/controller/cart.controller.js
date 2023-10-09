@@ -38,11 +38,11 @@ const newCart = async (req, res)=> {
 }
 const getCartById = async (req, res) =>{
     try {
-        const id = req.params.id;
-        const cart = await cartService.getCartById(id);
+        const cid = req.params.cid;
+        const cart = await cartService.getCartById(cid);
         res.status(200).json({
             status: "success",
-            message: `Cart with id:${id}`,
+            message: `Cart with id:${cid}`,
             payload: cart
         })
 
@@ -76,11 +76,11 @@ const addPorductToCart = async (req, res) => {
 }
 const deleteCart = async (req, res)=> {
     try {
-        const id = req.params.id;
-        const cart = await cartService.deleteCart(id);
+        const cid = req.params.cid;
+        const cart = await cartService.deleteCart(cachesid);
         res.status(200).json({
             status: "success",
-            message: `The cart with id: ${id} was deleted succesfully!`,
+            message: `The cart with id: ${cid} was deleted succesfully!`,
             payload: cart
         })
     } catch (error) {

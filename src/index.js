@@ -38,6 +38,11 @@ app.use(passport.session());
 const addLogger = require('./utils/logger');
 app.use(addLogger);
 
+// Swagger
+const { swaggerSpecs } = require('./utils/swaggerSpect.js');
+const swaggerUi = require("swagger-ui-express");
+//Documentation
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 //                  Routes
 // Views
 // const routesViews = require('./routes/views.route');

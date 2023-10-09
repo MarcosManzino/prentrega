@@ -11,13 +11,13 @@ const{ getUser,
 const router = new express.Router();
 router.use(express.json());
 router.use(express.urlencoded({extended:true}));
-   
+     
 router.get('/',goToLogin, isAdmin, getUser);
-router.get('/:id',goToLogin, isAdmin, getUserById);
+router.get('/:uid',goToLogin, isAdmin, getUserById);
 router.post('/', passport.authenticate('register-passport',{failureRedirect:'/session/failed-register'}),postUser);
-router.post('/premium/:uid',goToLogin, rolUserById );
-router.delete('/:id',goToLogin, isAdmin, delUserById);
-router.put('/:id',goToLogin, isAdmin, putUserById); 
+router.delete('/:uid',goToLogin, isAdmin, delUserById);
+router.put('/:uid',goToLogin, isAdmin, putUserById); 
+router.put('/premium/:uid',rolUserById ); 
 
 module.exports = router;
 

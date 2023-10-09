@@ -7,7 +7,7 @@
     margin-top:25px;
     margin-bottom: 25px;
     margin-left: 50px;
-}
+} 
 .box{
     display: flex;
     flex-direction: column;
@@ -23,4 +23,14 @@
 }
 .message{
     color: red;
+}
+.box-token{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-content: center; */
+    padding: 5px;
+    margin-left: 50px;
+  
+    /* padding-right: 200px; */
 }
