@@ -17,7 +17,7 @@ router.get('/:uid',goToLogin, isAdmin, getUserById);
 router.post('/', passport.authenticate('register-passport',{failureRedirect:'/session/failed-register'}),postUser);
 router.delete('/:uid',goToLogin, isAdmin, delUserById);
 router.put('/:uid',goToLogin, isAdmin, putUserById); 
-router.put('/premium/:uid',rolUserById ); 
+router.put('/premium/:uid',rolUserById );  
 
 module.exports = router;
 

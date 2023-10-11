@@ -16,7 +16,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo');
 app.use(cookieParser()); 
-app.use(session({
+app.use(session({ 
     store: MongoStore.create({
         mongoOptions:{useNewUrlParser:true,useUnifiedTopology:true},
         // ttl:'',
@@ -41,7 +41,7 @@ app.use(addLogger);
 // Swagger
 const { swaggerSpecs } = require('./utils/swaggerSpect.js');
 const swaggerUi = require("swagger-ui-express");
-//Documentation
+//Documentation 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 //                  Routes
 // Views
@@ -57,7 +57,7 @@ const routesCart = require('./routes/cart.route');
 app.use('/api/cart', routesCart);
 const viewsCart = require('./routes/cart.route.view');
 app.use('/cart', viewsCart);  
-// Users
+// Users 
 const routesUsers = require('./routes/user.route');
 app.use('/api/user',routesUsers);
 // Sessions

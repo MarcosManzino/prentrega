@@ -61,6 +61,7 @@ const rolUserById = async (req,res)=>{
             return res.status(201).json({
                 status: 'success',
                 msg: 'User update rol: Premium',
+                
             });
  
         }else{

@@ -47,6 +47,7 @@ class ProductClass{
             category: product.category,
             status: true
         });
+       
     }
     async updateOneStock(id, product){
         await ProductModel.updateOne({_id: id},  {stock: product,});

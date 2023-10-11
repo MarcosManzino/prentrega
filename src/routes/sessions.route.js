@@ -22,6 +22,6 @@ router.post("/login",passport.authenticate("login-passport", {failureRedirect: "
 router.get("/profile",goToLogin, sessionGetProfile);
 router.get("/logout", sessionGetLogout);
 router.get("/failed-register",sessionGetFailedRegister);
-router.get('*', sessionGetError );
+router.get('*', sessionGetError );  
 
-module.exports = router; 
+module.exports = router;  

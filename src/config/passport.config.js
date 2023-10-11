@@ -55,7 +55,7 @@ const initializePassport = () => {
                     rol: 'User',
                     cart:newCart._id
                   
-                } 
+                }  
                 console.log(userNew)
                 let result = await UserModel.create(userNew)
                 done(null, result)

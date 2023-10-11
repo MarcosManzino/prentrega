@@ -77,7 +77,7 @@ const addPorductToCart = async (req, res) => {
 const deleteCart = async (req, res)=> {
     try {
         const cid = req.params.cid;
-        const cart = await cartService.deleteCart(cachesid);
+        const cart = await cartService.deleteCart(cid);
         res.status(200).json({
             status: "success",
             message: `The cart with id: ${cid} was deleted succesfully!`,

@@ -166,9 +166,7 @@ const resetForm = async (req,res)=>{
 const resetPass = async (req,res)=>{
     try{
         let {email,password, token} = req.body
-        console.log(req.body)
         const user = await userModel.findOne({email:email})
-        console.log(user)
         if(isValidPass(password, user.password)){
            return res.status(401).render("resetPass", {
                 style: "resetPass.css",

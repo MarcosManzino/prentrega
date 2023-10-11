@@ -92,11 +92,10 @@ class ProductService {
     async updateProduct(_id, product) {
         try {
             if (!_id) throw new Error('Invalid _id');
-            // this.productValidation(product.title, product.description, product.price, product.thumbnail, product.code, product.stock, product.category);
             const updatedProduct = await ProductMethods.updateOne(_id, product);
             console.log(`The product with id: ${_id} was updated succesfully!`);
             return updatedProduct;
-        } catch (error) {
+        } catch (error) { 
           
              throw new Error(error.message);
         }

@@ -22,11 +22,11 @@ router.use(express.json());
 router.use(express.urlencoded({extended:true}));
 
 router.get("/",goToLogin, isAdmin, getAll);     
-router.get("/:cid",goToLogin, isAdmin, getCartById);
-router.post("/",goToLogin, newCart);
-router.post("/:cid/product/:pid",goToLogin,isUserPrimium, addPorductToCart);
-router.delete("/:cid",goToLogin,isAdmin, deleteCart);
-router.delete("/:cid/product/:pid",goToLogin, deleteProductFromCart);
+router.get("/:cid", getCartById);
+router.post("/",newCart);
+router.post("/:cid/product/:pid", addPorductToCart);
+router.delete("/:cid", deleteCart);
+router.delete("/:cid/product/:pid", deleteProductFromCart);
 router.put("/:cid/product/:pid",goToLogin, updateQuantity);
 router.put("/:cid",goToLogin, updateCart);
 router.get('/:cid/purchase',goToLogin, isUserPrimium, purchase);

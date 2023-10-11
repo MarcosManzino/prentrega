@@ -43,9 +43,7 @@ const getProductById = async (req, res) =>{
 const addProduct = async (req, res) =>{
       try {
           const product = req.body
-          product.owner = req.session.user.email
-          let user = req.session.user.email
-          console.log(user)
+          // product.owner = req.session.user.email 
           const { title, description, price, thumbnail,code,stock,category, status } = req.body;
         if (!title || !description || !price || !code || !stock || !category) {
             // creamos custom Error 
@@ -57,8 +55,8 @@ const addProduct = async (req, res) =>{
             })
         } 
           const productToAdd = new ProductDTO(product)
-          await productService.addProduct(productToAdd)
-          res.status(201).json({status:"success",message: 'Added successfuly', payload: product })
+          const result= await productService.addProduct(productToAdd)
+          res.status(201).json({status:"success",message: 'Added successfuly', payload: result })
       } catch (error) {
           console.error(error);
           res.status(400).json({status: "error", error: error.code, message: error.message})
@@ -97,7 +95,8 @@ const updateProduct = async (req, res) =>{
           const id = req.params.id;
           const productByUser = req.body
           const product = await productService.updateProduct(id, productByUser);
-          res.status(200).json({status: "success", message: `The product with id: ${id} was updated succesfully!`, payload: product
+          const result = await productService.getProductById(id)
+          res.status(200).json({status: "success", message: `The product with id: ${id} was updated succesfully!`, payload: result
           }) 
       } catch (error) {
           res.status(400).json({
